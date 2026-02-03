@@ -56,6 +56,7 @@ Main tables used:
 
 ## 📁 Project Structure
 
+```text
 data-analysis-project/
 ├── data/
 │   ├── raw/                # Original datasets
@@ -70,13 +71,4 @@ data-analysis-project/
 │   ├── figures/
 │   └── summary_tables/
 └── README.md
-
-## ▶ How to Run
-
-1. Clone this repository
-2. Install required Python libraries
-3. Run notebooks in the following order:
-   - 01_eda.ipynb
-   - 02_cleaning.ipynb
-   - 03_analysis.ipynb
 

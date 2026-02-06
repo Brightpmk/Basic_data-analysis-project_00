@@ -2,130 +2,171 @@
 
 ## 📌 Project Overview
 
-This project focuses on cleaning, analyzing, and extracting actionable insights from the **Olist Brazilian E-commerce Dataset**.
-The objective is to practice end-to-end data analysis using **Python and SQL** by working with real-world, structured e-commerce data.
+This project presents an end-to-end data analysis of the **Olist
+Brazilian E-commerce Dataset**, focusing on extracting business-driven
+insights from real transactional data.
 
-The analysis covers multiple aspects of the business, including sales performance, customer behavior, product categories,
-seller performance, delivery efficiency, and customer reviews.
+The goal of this project is to simulate a real-world data analyst
+workflow --- from raw data ingestion and cleaning to SQL-based
+analytical modeling and insight generation.
 
----
+The analysis explores revenue dynamics, customer behavior, product
+performance, seller efficiency, operational delays, and review patterns.
+
+------------------------------------------------------------------------
+
+## 🎯 Business Questions
+
+This project aims to answer the following analytical questions:
+
+1.  How does revenue evolve over time?
+2.  Is revenue concentrated within a small group of product categories?
+3.  How do review scores relate to revenue performance?
+4.  Who are the high-value customers?
+5.  How do weekday and weekend sales compare?
+6.  How do delivery delays affect customer satisfaction?
+7.  Which sellers generate the highest revenue?
+
+------------------------------------------------------------------------
 
 ## 📊 Dataset
 
-The dataset used in this project is the **Olist Brazilian E-commerce Dataset**, which contains real transactional data
-from a Brazilian online marketplace.
+The dataset used is the **Olist Brazilian E-commerce Dataset**,
+containing transactional data from a Brazilian marketplace.
 
-Main tables used in this project:
-- Orders
-- Order Items
-- Payments
-- Reviews
-- Customers
-- Products
-- Sellers
-- Product Category Translation (Portuguese → English)
+### Main Tables Used:
 
-The data was cleaned and merged into a single analytical fact table for further analysis.
+-   Orders
+-   Order Items
+-   Payments
+-   Reviews
+-   Customers
+-   Products
+-   Sellers
+-   Product Category Translation
 
----
+After cleaning and transformation, the data was merged into a unified
+analytical fact table for SQL-based analysis.
+
+------------------------------------------------------------------------
 
 ## 🛠 Tools & Technologies
 
-- **Python** (pandas, matplotlib, seaborn)
-- **SQL** (SQLite)
-- **Jupyter Notebook**
-- **VS Code**
-- **Git & GitHub**
+-   **Python** (pandas, matplotlib)
+-   **SQL** (SQLite)
+-   **Jupyter Notebook**
+-   **VS Code**
+-   **Git & GitHub**
 
----
+------------------------------------------------------------------------
 
 ## 🔄 Project Workflow
 
-1. **Exploratory Data Analysis (EDA)**
-   - Inspected data structure, data types, and data quality
-   - Identified missing values, duplicates, and inconsistencies
+### 1️⃣ Exploratory Data Analysis (EDA)
 
-2. **Data Cleaning & Feature Engineering**
-   - Converted date columns to datetime format
-   - Merged multiple datasets into a unified fact table
-   - Created derived features such as revenue, order month, weekday, and delivery delay
+-   Inspected schema, data types, and distributions
+-   Identified missing values and inconsistencies
+-   Assessed initial revenue and review trends
 
-3. **SQL Analysis**
-   - Imported cleaned data into SQLite
-   - Wrote intermediate to advanced SQL queries using:
-     - Subqueries
-     - Common Table Expressions (CTEs)
-     - Window functions
-     - CASE-based business logic
+### 2️⃣ Data Cleaning & Feature Engineering
 
-4. **Data Analysis & Visualization**
-   - Analyzed revenue trends and seasonality
-   - Identified top-performing product categories and sellers
-   - Explored customer segmentation and review behavior
-   - Evaluated operational metrics such as delivery delays
+-   Converted date columns to datetime format
+-   Created derived features:
+    -   Revenue
+    -   Order month
+    -   Weekday vs weekend
+    -   Delivery delay
+-   Merged relational tables into a structured analytical dataset
 
----
+### 3️⃣ SQL-Based Analytical Modeling
 
-## 📈 Key Insights
+Imported cleaned dataset into SQLite and implemented multiple analytical
+queries using:
 
-- Revenue exhibits clear monthly trends and seasonal patterns.
-- A small number of product categories contribute a large portion of total revenue (Pareto effect).
-- Orders with higher review scores tend to generate higher average revenue.
-- High-value customers represent a small portion of the customer base but contribute disproportionately to total revenue.
-- Weekday orders generate more revenue than weekend orders.
-- Some high-revenue product categories show relatively low review scores, indicating potential operational or quality issues.
-- Delivery delays show a skewed distribution, suggesting the presence of logistical outliers.
+-   Subqueries
+-   Common Table Expressions (CTEs)
+-   Window functions
+-   CASE-based business logic
+-   Revenue ranking and segmentation logic
 
----
+### 4️⃣ Visualization & Insight Generation
 
-## 📊 Visual Insights
+-   Built revenue trend analysis
+-   Performed Pareto (80/20) revenue concentration analysis
+-   Evaluated seller performance
+-   Analyzed review-score behavior
+-   Examined operational delivery delays
 
-### Monthly Revenue Trend
-![Monthly Revenue](outputs/figures/monthly_revenue_trend.png)
+------------------------------------------------------------------------
 
-### Top Product Categories by Revenue
-![Top Categories](outputs/figures/top_categories_revenue.png)
+## 📈 Key Findings
 
-### Review Score vs Revenue
-![Review vs Revenue](outputs/figures/review_vs_revenue.png)
+-   Revenue demonstrates strong monthly patterns and seasonality.
+-   A small subset of product categories contributes a disproportionate
+    share of total revenue (Pareto effect).
+-   High-value customers represent a small percentage of the customer
+    base but contribute significantly to total revenue.
+-   Weekday sales outperform weekend sales in revenue contribution.
+-   Some high-revenue categories have lower review scores, indicating
+    potential operational improvement areas.
+-   Delivery delay distribution is right-skewed, revealing logistical
+    outliers.
 
-### Weekday vs Weekend Revenue
-![Weekday vs Weekend](outputs/figures/weekday_vs_weekend.png)
+------------------------------------------------------------------------
 
-### Customer Segmentation
-![Customer Segmentation](outputs/figures/customer_segment_distribution.png)
+## 📂 SQL Analysis Modules
 
-### Delivery Delay Distribution
-![Delivery Delay](outputs/figures/delivery_delay_distribution.png)
+This project contains **10 structured SQL analysis files**, each
+focusing on a specific business metric:
 
----
+1.  Monthly revenue and order trends\
+2.  Monthly KPI analysis\
+3.  Product category ranking\
+4.  Customer segmentation\
+5.  Review score analysis\
+6.  Weekday vs weekend performance\
+7.  Seller performance\
+8.  Top 20% revenue concentration (Pareto analysis)\
+9.  Total revenue calculation\
+10. Revenue from top 10 categories
 
-## 📁 Project Structure
+------------------------------------------------------------------------
 
-```text
-data-analysis-project/
+📁 Project Structure
+Basic_data-analysis-project/
 ├── data/
-│   ├── raw/                # Original datasets
-│   └── processed/          # Cleaned analytical dataset
+│   ├── raw/
+│   └── processed/
 │
 ├── notebooks/
-│   ├── 01_eda.ipynb        # Exploratory Data Analysis
-│   ├── 02_cleaning.ipynb   # Data cleaning and feature engineering
-│   └── 03_analysis.ipynb   # Analysis, visualization, and insights
+│   ├── 01_eda.ipynb
+│   ├── 02_cleaning.ipynb
+│   └── 03_analysis.ipynb
 │
 ├── sql/
-│   ├── 01_Monthly_revenue_analysis.sql
+│   ├── 01_Monthly_revenue_and_orders.sql
 │   ├── 02_Monthly_KPI.sql
-│   ├── 03_Ranking_category.sql
+│   ├── 03_Raking_category.sql
 │   ├── 04_Customer_segmentation.sql
 │   ├── 05_Review_score.sql
-│   ├── 06_Weekday_vs_Weekend.sql
+│   ├── 06_Weekday_vs_Weekend_performance.sql
 │   ├── 07_Seller_performance.sql
-│   └── 08_Top20%.sql
+│   ├── 08_Top20%.sql
+│   ├── 09_Total_revenue.sql
+│   └── 10_Revenue_from_top10category.sql
 │
 ├── outputs/
-│   ├── figures/            # Saved visualizations
-│   └── summary_tables/     # SQL query outputs
+│   ├── figures/
+│   └── summary_tables/
 │
 ├── README.md
 └── requirements.txt
+
+------------------------------------------------------------------------
+
+## 🚀 Future Improvements
+
+-   Add automated data validation checks
+-   Implement reproducible pipeline scripts
+-   Explore BI dashboard integration (Power BI / Tableau)
+-   Optimize SQL queries using indexing and performance analysis

@@ -132,7 +132,17 @@ focusing on a specific business metric:
 
 ------------------------------------------------------------------------
 
+## 🚀 Future Improvements
+
+-   Add automated data validation checks
+-   Implement reproducible pipeline scripts
+-   Explore BI dashboard integration (Power BI / Tableau)
+-   Optimize SQL queries using indexing and performance analysis
+
+------------------------------------------------------------------------
+
 📁 Project Structure
+```text
 Basic_data-analysis-project/
 ├── data/
 │   ├── raw/
@@ -163,10 +173,3 @@ Basic_data-analysis-project/
 └── requirements.txt
 
 ------------------------------------------------------------------------
-
-## 🚀 Future Improvements
-
--   Add automated data validation checks
--   Implement reproducible pipeline scripts
--   Explore BI dashboard integration (Power BI / Tableau)
--   Optimize SQL queries using indexing and performance analysis

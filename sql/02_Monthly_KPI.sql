@@ -1,9 +1,18 @@
-WITH order_totals AS (
-  SELECT
-    order_id, SUM(revenue) AS order_revenue
-  FROM olist
-  GROUP BY order_id
+-- Monthly business performance overview
+-- ใช้ CTE เพื่อแยก logic ให้ชัดเจนและอ่านง่าย
+WITH monthly_orders AS (
+    SELECT
+        order_month,
+        order_id,
+        revenue
+    FROM olist
 )
+
 SELECT
-  ROUND(AVG(order_revenue), 2) AS avg_order_value
-FROM order_totals;
+    order_month,
+    COUNT(DISTINCT order_id) AS total_orders,
+    SUM(revenue) AS total_revenue,
+    ROUND(AVG(revenue), 2) AS avg_item_revenue
+FROM monthly_orders
+GROUP BY order_month
+ORDER BY order_month;

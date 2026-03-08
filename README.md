@@ -1,159 +1,100 @@
-# Olist E-commerce Data Analysis Project
 
-## 📌 Project Overview
+# Olist E‑commerce Data Analysis
 
-This project presents an end-to-end data analysis of the **Olist
-Brazilian E-commerce Dataset**, focusing on extracting business-driven
-insights from real transactional data.
+![Python](https://img.shields.io/badge/Python-3.11-blue)
+![SQL](https://img.shields.io/badge/SQL-Analytics-orange)
+![Pandas](https://img.shields.io/badge/Pandas-Data%20Analysis-green)
+![Matplotlib](https://img.shields.io/badge/Visualization-Matplotlib-blueviolet)
+![Data Analysis](https://img.shields.io/badge/Data-Analysis-success)
 
-The goal of this project is to simulate a real-world data analyst
-workflow --- from raw data ingestion and cleaning to SQL-based
-analytical modeling and insight generation.
+## Project Overview
 
-The analysis explores revenue dynamics, customer behavior, product
-performance, seller efficiency, operational delays, and review patterns.
+This project performs **exploratory data analysis (EDA) and business analytics** on the **Olist Brazilian E‑commerce dataset**.  
+The objective is to transform raw transactional data into meaningful **business insights using SQL, Python, and data visualization**.
 
-------------------------------------------------------------------------
+The analysis investigates revenue trends, product performance, customer behavior, logistics performance, and seller performance within the marketplace.
 
-## 🎯 Business Questions
+The workflow combines **SQL analysis, Python data processing, and visualization** to answer real-world business questions.
 
-This project aims to answer the following analytical questions:
+---
 
-1.  How does revenue evolve over time?
-2.  Is revenue concentrated within a small group of product categories?
-3.  How do review scores relate to revenue performance?
-4.  Who are the high-value customers?
-5.  How do weekday and weekend sales compare?
-6.  How do delivery delays affect customer satisfaction?
-7.  Which sellers generate the highest revenue?
+## Dataset
 
-------------------------------------------------------------------------
+The project uses the **Olist Brazilian E‑commerce dataset**, which contains transactional data from a Brazilian online marketplace.
 
-## 📊 Dataset
+Raw datasets are stored in:
 
-The dataset used is the **Olist Brazilian E-commerce Dataset**,
-containing transactional data from a Brazilian marketplace.
+```
+data/raw/
+```
 
-### Main Tables Used:
+Files used in the analysis:
 
--   Orders
--   Order Items
--   Payments
--   Reviews
--   Customers
--   Products
--   Sellers
--   Product Category Translation
+- `olist_customers_dataset.csv`
+- `olist_orders_dataset.csv`
+- `olist_order_items_dataset.csv`
+- `olist_order_payments_dataset.csv`
+- `olist_order_reviews_dataset.csv`
+- `olist_products_dataset.csv`
+- `olist_sellers_dataset.csv`
+- `product_category_name_translation.csv`
 
-After cleaning and transformation, the data was merged into a unified
-analytical fact table for SQL-based analysis.
+These datasets represent customers, orders, payments, products, sellers, and reviews in a relational structure.
 
-------------------------------------------------------------------------
+---
 
-## 🛠 Tools & Technologies
+## Analysis Workflow
 
--   **Python** (pandas, matplotlib)
--   **SQL** (SQLite)
--   **Jupyter Notebook**
--   **VS Code**
--   **Git & GitHub**
+The analysis follows a structured workflow:
 
-------------------------------------------------------------------------
+```
+Raw CSV Data
+      │
+      ▼
+Data Cleaning (Python / Pandas)
+      │
+      ▼
+Structured Dataset
+(clean_olist_data.csv)
+      │
+      ▼
+SQL Business Analysis
+      │
+      ▼
+Summary Tables
+      │
+      ▼
+Data Visualization
+(Matplotlib)
+```
 
-## 🔄 Project Workflow
+Key stages:
 
-### 1️⃣ Exploratory Data Analysis (EDA)
+1. **Exploratory Data Analysis (EDA)** using Jupyter notebooks
+2. **Data cleaning and preparation** using Pandas
+3. **SQL-based business analysis**
+4. **Visualization of key insights**
+5. **Exporting summary tables and charts**
 
--   Inspected schema, data types, and distributions
--   Identified missing values and inconsistencies
--   Assessed initial revenue and review trends
+---
 
-### 2️⃣ Data Cleaning & Feature Engineering
+## Repository Structure
 
--   Converted date columns to datetime format
--   Created derived features:
-    -   Revenue
-    -   Order month
-    -   Weekday vs weekend
-    -   Delivery delay
--   Merged relational tables into a structured analytical dataset
-
-### 3️⃣ SQL-Based Analytical Modeling
-
-Imported cleaned dataset into SQLite and implemented multiple analytical
-queries using:
-
--   Subqueries
--   Common Table Expressions (CTEs)
--   Window functions
--   CASE-based business logic
--   Revenue ranking and segmentation logic
-
-### 4️⃣ Visualization & Insight Generation
-
--   Built revenue trend analysis
--   Performed Pareto (80/20) revenue concentration analysis
--   Evaluated seller performance
--   Analyzed review-score behavior
--   Examined operational delivery delays
-
-------------------------------------------------------------------------
-
-## 📈 Key Findings
-
--   Revenue demonstrates strong monthly patterns and seasonality.
--   A small subset of product categories contributes a disproportionate
-    share of total revenue (Pareto effect).
--   High-value customers represent a small percentage of the customer
-    base but contribute significantly to total revenue.
--   Weekday sales outperform weekend sales in revenue contribution.
--   Some high-revenue categories have lower review scores, indicating
-    potential operational improvement areas.
--   Delivery delay distribution is right-skewed, revealing logistical
-    outliers.
-
-------------------------------------------------------------------------
-
-## 📂 SQL Analysis Modules
-
-This project contains **10 structured SQL analysis files**, each
-focusing on a specific business metric:
-
-1.  Monthly revenue and order trends\
-2.  Monthly KPI analysis\
-3.  Product category ranking\
-4.  Customer segmentation\
-5.  Review score analysis\
-6.  Weekday vs weekend performance\
-7.  Seller performance\
-8.  Top 20% revenue concentration (Pareto analysis)\
-9.  Total revenue calculation\
-10. Revenue from top 10 categories
-
-------------------------------------------------------------------------
-
-## 🚀 Future Improvements
-
--   Add automated data validation checks
--   Implement reproducible pipeline scripts
--   Explore BI dashboard integration (Power BI / Tableau)
--   Optimize SQL queries using indexing and performance analysis
-
-------------------------------------------------------------------------
-
-📁 Project Structure
-```text
-Basic_data-analysis-project/
+```
+olist-ecommerce-data-analysis-main/
+│
 ├── data/
-│   ├── raw/
+│   ├── raw/                      # Original Olist CSV files
 │   └── processed/
+│       ├── clean_olist_data.csv
+│       └── olist_analysis.db
 │
-├── notebooks/
-│   ├── 01_eda.ipynb
-│   ├── 02_cleaning.ipynb
-│   └── 03_analysis.ipynb
+├── notebook/
+│   ├── 01_eda.ipynb              # Initial exploration
+│   ├── 02_cleaning.ipynb         # Data cleaning
+│   └── 03_analysis.ipynb         # Analysis workflow
 │
-├── sql/
+├── sql/                          # SQL analysis queries
 │   ├── 01_Monthly_revenue_and_orders.sql
 │   ├── 02_Monthly_KPI.sql
 │   ├── 03_Raking_category.sql
@@ -166,10 +107,135 @@ Basic_data-analysis-project/
 │   └── 10_Revenue_from_top10category.sql
 │
 ├── outputs/
-│   ├── figures/
-│   └── summary_tables/
+│   ├── figures/                  # Visualization outputs
+│   └── summary_tables/           # Aggregated results
 │
-├── README.md
-└── requirements.txt
+├── requirements.txt
+└── README.md
+```
 
-------------------------------------------------------------------------
+---
+
+## Key Business Questions
+
+The project investigates several key business questions:
+
+- How does **monthly revenue evolve over time**?
+- Which **product categories generate the highest revenue**?
+- How do **customer reviews relate to revenue performance**?
+- Are there **differences between weekday and weekend sales**?
+- What is the **distribution of delivery delays**?
+- How is **revenue distributed among sellers and customers**?
+
+---
+
+## Example Visual Insights
+
+### Monthly Revenue Trend
+
+![Monthly Revenue](outputs/figures/monthly_revenue_trend.png)
+
+Shows how total marketplace revenue evolves over time.
+
+---
+
+### Top Product Categories by Revenue
+
+![Top Categories](outputs/figures/top_categories_revenue.png)
+
+Identifies which product categories contribute the most revenue.
+
+---
+
+### Delivery Delay Distribution
+
+![Delivery Delay](outputs/figures/delivery_delay_distribution.png)
+
+Analyzes logistics performance and shipping delays.
+
+---
+
+### Customer Segment Distribution
+
+![Customer Segment](outputs/figures/customer_segment_distribution.png)
+
+Shows how revenue or orders are distributed across customer groups.
+
+---
+
+### Review Score vs Revenue
+
+![Review vs Revenue](outputs/figures/review_vs_revenue.png)
+
+Examines the relationship between customer satisfaction and revenue.
+
+---
+
+### Weekday vs Weekend Performance
+
+![Weekday vs Weekend](outputs/figures/weekday_vs_weekend.png)
+
+Compares marketplace performance between weekdays and weekends.
+
+---
+
+## Generated Summary Tables
+
+Aggregated results are exported to:
+
+```
+outputs/summary_tables/
+```
+
+Examples:
+
+- Monthly KPI metrics
+- Category revenue rankings
+- Customer segmentation
+- Seller performance
+- Top revenue contributors
+
+These tables support further analysis or dashboard development.
+
+---
+
+## Tech Stack
+
+- **Python**
+- **Pandas**
+- **NumPy**
+- **SQL**
+- **SQLite**
+- **Matplotlib**
+- **Jupyter Notebook**
+
+---
+
+## Skills Demonstrated
+
+- Exploratory Data Analysis (EDA)
+- Data cleaning and transformation
+- SQL analytical queries
+- Business metrics analysis
+- Data visualization
+- Translating raw data into actionable insights
+
+---
+
+## Portfolio Relevance
+
+This project demonstrates practical **data analyst skills**, including:
+
+- Investigating business performance using real-world e‑commerce data
+- Writing analytical SQL queries
+- Building visualizations to communicate insights
+- Structuring a reproducible data analysis workflow
+
+These skills are essential for **data analyst and data analytics internship roles**.
+
+---
+
+## Author
+
+**Bright**  
+Computer Engineering Student

@@ -1,241 +1,288 @@
+# Olist E-commerce Data Analysis
 
-# Olist E‑commerce Data Analysis
+## Overview
 
-![Python](https://img.shields.io/badge/Python-3.11-blue)
-![SQL](https://img.shields.io/badge/SQL-Analytics-orange)
-![Pandas](https://img.shields.io/badge/Pandas-Data%20Analysis-green)
-![Matplotlib](https://img.shields.io/badge/Visualization-Matplotlib-blueviolet)
-![Data Analysis](https://img.shields.io/badge/Data-Analysis-success)
+This project analyzes the Brazilian Olist e-commerce dataset to uncover business insights across sales performance, customer behavior, and delivery operations.
 
-## Project Overview
+The project is designed with an end-to-end data workflow:
 
-This project performs **exploratory data analysis (EDA) and business analytics** on the **Olist Brazilian E‑commerce dataset**.  
-The objective is to transform raw transactional data into meaningful **business insights using SQL, Python, and data visualization**.
+* raw data ingestion
+* data cleaning and feature engineering
+* analytical data modeling (fact/dimension tables)
+* SQL-based analysis
+* dashboard-ready outputs
 
-The analysis investigates revenue trends, product performance, customer behavior, logistics performance, and seller performance within the marketplace.
+The goal is to demonstrate strong data analysis fundamentals, including:
 
-The workflow combines **SQL analysis, Python data processing, and visualization** to answer real-world business questions.
+* correct metric definition
+* proper handling of data granularity
+* reproducible data pipelines
+* business-oriented analytical thinking
+
+---
+
+## Key Objectives
+
+* Build a clean analytical dataset from multiple relational tables
+* Ensure correct metric computation by separating item-level and order-level logic
+* Analyze revenue trends, customer behavior, and delivery performance
+* Provide a structured dataset suitable for BI tools (e.g., Power BI)
 
 ---
 
 ## Dataset
 
-The project uses the **Olist Brazilian E‑commerce dataset**, which contains transactional data from a Brazilian online marketplace.
+Source: Olist Brazilian E-commerce Public Dataset
 
-Raw datasets are stored in:
+Main tables:
 
-```
-data/raw/
-```
-
-Files used in the analysis:
-
-- `olist_customers_dataset.csv`
-- `olist_orders_dataset.csv`
-- `olist_order_items_dataset.csv`
-- `olist_order_payments_dataset.csv`
-- `olist_order_reviews_dataset.csv`
-- `olist_products_dataset.csv`
-- `olist_sellers_dataset.csv`
-- `product_category_name_translation.csv`
-
-These datasets represent customers, orders, payments, products, sellers, and reviews in a relational structure.
+* orders
+* order_items
+* order_payments
+* order_reviews
+* customers
+* products
+* sellers
+* product_category_name_translation
 
 ---
 
-## Analysis Workflow
-
-The analysis follows a structured workflow:
+## Project Structure
 
 ```
-Raw CSV Data
-      │
-      ▼
-Data Cleaning (Python / Pandas)
-      │
-      ▼
-Structured Dataset
-(clean_olist_data.csv)
-      │
-      ▼
-SQL Business Analysis
-      │
-      ▼
-Summary Tables
-      │
-      ▼
-Data Visualization
-(Matplotlib)
-```
+olist-ecommerce-data-analysis/
 
-Key stages:
-
-1. **Exploratory Data Analysis (EDA)** using Jupyter notebooks
-2. **Data cleaning and preparation** using Pandas
-3. **SQL-based business analysis**
-4. **Visualization of key insights**
-5. **Exporting summary tables and charts**
-
----
-
-## Repository Structure
-
-```
-olist-ecommerce-data-analysis-main/
-│
 ├── data/
-│   ├── raw/                      # Original Olist CSV files
-│   └── processed/
-│       ├── clean_olist_data.csv
-│       └── olist_analysis.db
-│
-├── notebook/
-│   ├── 01_eda.ipynb              # Initial exploration
-│   ├── 02_cleaning.ipynb         # Data cleaning
-│   └── 03_analysis.ipynb         # Analysis workflow
-│
-├── sql/                          # SQL analysis queries
-│   ├── 01_Monthly_revenue_and_orders.sql
-│   ├── 02_Monthly_KPI.sql
-│   ├── 03_Raking_category.sql
-│   ├── 04_Customer_segmentation.sql
-│   ├── 05_Review_score.sql
-│   ├── 06_Weekday_vs_Weekend_performance.sql
-│   ├── 07_Seller_performance.sql
-│   ├── 08_Top20%.sql
-│   ├── 09_Total_revenue.sql
-│   └── 10_Revenue_from_top10category.sql
-│
+│   ├── raw/                  # Original datasets
+│   ├── processed/            # Cleaned dataset (item-level)
+│   └── marts/                # Analytical tables (fact/dimension)
+
+├── notebooks/
+│   ├── 01_eda.ipynb          # Data exploration
+│   ├── 02_cleaning.ipynb     # Cleaning logic walkthrough
+│   └── 03_analysis.ipynb     # KPI validation & reasoning
+
+├── scripts/
+│   ├── build_processed_data.py
+│   ├── build_analytics_mart.py
+│   ├── run_analysis.py
+│   └── notebook_reference_checks.py
+
+├── sql/                      # Business analysis queries
+
 ├── outputs/
-│   ├── figures/                  # Visualization outputs
-│   └── summary_tables/           # Aggregated results
-│
+│   ├── figures/              # Generated charts
+│   └── summary_tables/       # Aggregated results
+
+├── dashboard/
+│   ├── exports/              # Dashboard screenshots
+│   └── *_notes.md            # Modeling & KPI notes
+
+├── docs/
+│   ├── data_quality_notes.md
+│   └── metric_modeling_rules.md
+
 ├── requirements.txt
 └── README.md
 ```
 
 ---
 
-## Key Business Questions
+## Data Modeling Approach
 
-The project investigates several key business questions:
+### 1. Analytical Grain
 
-- How does **monthly revenue evolve over time**?
-- Which **product categories generate the highest revenue**?
-- How do **customer reviews relate to revenue performance**?
-- Are there **differences between weekday and weekend sales**?
-- What is the **distribution of delivery delays**?
-- How is **revenue distributed among sellers and customers**?
+The processed dataset is stored at the **order-item level**:
 
----
+* 1 row = 1 item within an order
+* Orders with multiple items appear multiple times
 
-## Example Visual Insights
+Because of this:
 
-### Monthly Revenue Trend
-
-![Monthly Revenue](outputs/figures/monthly_revenue_trend.png)
-
-Shows how total marketplace revenue evolves over time.
+* Business KPIs must be computed at the **order level**
+* Product/category analysis remains at the **item level**
 
 ---
 
-### Top Product Categories by Revenue
+### 2. Fact Tables
 
-![Top Categories](outputs/figures/top_categories_revenue.png)
+* `fact_sales` → item-level (order item)
+* `fact_orders` → order-level (aggregated)
 
-Identifies which product categories contribute the most revenue.
+Use:
 
----
-
-### Delivery Delay Distribution
-
-![Delivery Delay](outputs/figures/delivery_delay_distribution.png)
-
-Analyzes logistics performance and shipping delays.
+* `fact_orders` for KPIs (revenue, AOV, delivery, reviews)
+* `fact_sales` for category/product analysis
 
 ---
 
-### Customer Segment Distribution
+### 3. Revenue Definition
 
-![Customer Segment](outputs/figures/customer_segment_distribution.png)
+Two revenue concepts:
 
-Shows how revenue or orders are distributed across customer groups.
+* `revenue` → item-level (price + freight)
+* `order_revenue` → aggregated to order level
 
----
+Primary KPI rule:
 
-### Review Score vs Revenue
+* **Use delivered orders only**
 
-![Review vs Revenue](outputs/figures/review_vs_revenue.png)
-
-Examines the relationship between customer satisfaction and revenue.
-
----
-
-### Weekday vs Weekend Performance
-
-![Weekday vs Weekend](outputs/figures/weekday_vs_weekend.png)
-
-Compares marketplace performance between weekdays and weekends.
+This avoids overstating business performance with canceled or incomplete orders.
 
 ---
 
-## Generated Summary Tables
+### 4. Key Data Considerations
 
-Aggregated results are exported to:
+* `order_total_payment_value` is duplicated across item rows → must not be summed at item level
+* Some records contain delivery inconsistencies → explicitly flagged
+* Missing values are partly structural (not all are data quality issues)
 
+---
+
+## Key Analyses
+
+### 1. Sales Performance
+
+* Monthly revenue trend (delivered orders)
+* Order volume and growth rate
+* Average order value (AOV)
+
+### 2. Product & Category Analysis
+
+* Top categories by revenue
+* Revenue distribution across product groups
+* Pareto contribution (top 20% categories)
+
+### 3. Delivery Performance
+
+* Late delivery rate
+* Delivery delay impact on customer reviews
+* On-time vs late comparison
+
+### 4. Customer Behavior
+
+* Repeat vs one-time customers
+* Customer revenue contribution
+* RFM-based segmentation (in marts layer)
+
+---
+
+## Example KPI (Order-Level)
+
+* Total Orders
+* Total Delivered Revenue
+* Average Order Value (AOV)
+* Average Review Score
+* Late Delivery Rate
+
+All computed from **order-level aggregation**
+
+---
+
+## How to Run
+
+### 1. Install dependencies
+
+```bash
+pip install -r requirements.txt
 ```
-outputs/summary_tables/
+
+### 2. Build processed dataset
+
+```bash
+python scripts/build_processed_data.py
 ```
 
-Examples:
+### 3. Build analytics mart
 
-- Monthly KPI metrics
-- Category revenue rankings
-- Customer segmentation
-- Seller performance
-- Top revenue contributors
+```bash
+python scripts/build_analytics_mart.py
+```
 
-These tables support further analysis or dashboard development.
+### 4. Run analysis outputs
 
----
+```bash
+python scripts/run_analysis.py
+```
 
-## Tech Stack
+### 5. (Optional) Validate notebook logic
 
-- **Python**
-- **Pandas**
-- **NumPy**
-- **SQL**
-- **SQLite**
-- **Matplotlib**
-- **Jupyter Notebook**
+```bash
+python scripts/notebook_reference_checks.py
+```
 
 ---
 
-## Skills Demonstrated
+## Dashboard Preview
 
-- Exploratory Data Analysis (EDA)
-- Data cleaning and transformation
-- SQL analytical queries
-- Business metrics analysis
-- Data visualization
-- Translating raw data into actionable insights
+### Executive Overview
+High-level KPIs including total revenue, total orders, average review score, and late delivery rate, along with monthly revenue and order trends.
+
+![Executive Overview](dashboard/exports/executive_overview.png)
 
 ---
 
-## Portfolio Relevance
+### Product Performance
+Top-performing product categories by revenue, revenue share distribution, and the relationship between category revenue and customer satisfaction.
 
-This project demonstrates practical **data analyst skills**, including:
-
-- Investigating business performance using real-world e‑commerce data
-- Writing analytical SQL queries
-- Building visualizations to communicate insights
-- Structuring a reproducible data analysis workflow
-
-These skills are essential for **data analyst and data analytics internship roles**.
+![Product Performance](dashboard/exports/product_performance.png)
 
 ---
 
-## Author
+### Delivery & Customer Experience
+Delivery performance analysis, including late delivery rates by state, delivery status distribution, and the impact of delivery delays on customer reviews.
 
-**Bright**  
-Computer Engineering Student
+![Delivery & Customer Experience](dashboard/exports/delivery_customer_experience.png)
+
+---
+
+### Customer Segmentation
+Customer segmentation using RFM analysis, highlighting customer distribution, repeat behavior, and revenue contribution by segment.
+
+![Customer Segmentation](dashboard/exports/customer_segmentation.png)
+
+Notes:
+
+* The dashboard is built on top of the marts layer
+* `fact_orders` is used for KPI calculations
+* `fact_sales` is used for product/category visuals
+
+---
+
+## Key Insights (Example)
+
+* Revenue is heavily concentrated in a small number of categories (Pareto effect)
+* Late deliveries negatively impact customer review scores
+* Repeat customers contribute disproportionately to total revenue
+* Delivered-order filtering provides a more accurate view of business performance
+
+---
+
+## Technical Highlights
+
+* Proper separation of **item-level vs order-level logic**
+* End-to-end reproducible data pipeline
+* Combination of Python + SQL for analysis
+* Star schema modeling for BI readiness
+* Explicit handling of data quality and metric assumptions
+
+---
+
+## Limitations
+
+* Dataset is historical and may not reflect real-time business behavior
+* Some delivery-related inconsistencies exist in source data
+* Customer retention is approximated using order history (no full lifecycle tracking)
+
+---
+
+## Conclusion
+
+This project demonstrates the importance of:
+
+* correct metric definitions
+* understanding data granularity
+* building clean analytical datasets
+* connecting data work to business meaning
+
+It reflects a practical, production-style approach to data analysis rather than a purely exploratory workflow.

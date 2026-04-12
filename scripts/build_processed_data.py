@@ -41,6 +41,7 @@ def clean_items(items: pd.DataFrame) -> pd.DataFrame:
     items = items.drop_duplicates().copy()
     items["price"] = pd.to_numeric(items["price"], errors="coerce")
     items["freight_value"] = pd.to_numeric(items["freight_value"], errors="coerce")
+    items["shipping_limit_date"] = pd.to_datetime(items["shipping_limit_date"], errors="coerce")
     return items
 
 
@@ -56,6 +57,12 @@ def clean_payments(payments: pd.DataFrame) -> pd.DataFrame:
 def clean_reviews(reviews: pd.DataFrame) -> pd.DataFrame:
     reviews = reviews.drop_duplicates().copy()
     reviews["review_score"] = pd.to_numeric(reviews["review_score"], errors="coerce")
+    reviews["review_creation_date"] = pd.to_datetime(
+        reviews["review_creation_date"], errors="coerce"
+    )
+    reviews["review_answer_timestamp"] = pd.to_datetime(
+        reviews["review_answer_timestamp"], errors="coerce"
+    )
     return reviews
 
 
@@ -76,29 +83,25 @@ def clean_sellers(sellers: pd.DataFrame) -> pd.DataFrame:
 
 
 def build_payment_agg(payments: pd.DataFrame) -> pd.DataFrame:
-    payment_agg = (
+    return (
         payments.groupby("order_id", as_index=False)
         .agg(
-            total_payment_value=("payment_value", "sum"),
-            payment_installments=("payment_installments", "max"),
+            order_total_payment_value=("payment_value", "sum"),
+            payment_installments_max=("payment_installments", "max"),
             payment_type_nunique=("payment_type", "nunique"),
         )
     )
-    return payment_agg
 
 
 def build_review_agg(reviews: pd.DataFrame) -> pd.DataFrame:
-    review_agg = (
+    return (
         reviews.groupby("order_id", as_index=False)
         .agg(
             review_score=("review_score", "mean"),
-            has_review_comment=(
-                "review_comment_message",
-                lambda x: int(x.notna().any())
-            ),
+            has_review_comment=("review_comment_message", lambda x: int(x.notna().any())),
+            review_count=("review_id", "nunique"),
         )
     )
-    return review_agg
 
 
 def build_processed_dataset(data: dict[str, pd.DataFrame]) -> pd.DataFrame:
@@ -114,15 +117,10 @@ def build_processed_dataset(data: dict[str, pd.DataFrame]) -> pd.DataFrame:
     payment_agg = build_payment_agg(payments)
     review_agg = build_review_agg(reviews)
 
-    products_enriched = products.merge(
-        categories,
-        on="product_category_name",
-        how="left"
-    )
+    products_enriched = products.merge(categories, on="product_category_name", how="left")
 
     df = (
-        items
-        .merge(orders, on="order_id", how="left")
+        items.merge(orders, on="order_id", how="left")
         .merge(customers, on="customer_id", how="left")
         .merge(products_enriched, on="product_id", how="left")
         .merge(sellers, on="seller_id", how="left", suffixes=("", "_seller"))
@@ -130,17 +128,13 @@ def build_processed_dataset(data: dict[str, pd.DataFrame]) -> pd.DataFrame:
         .merge(review_agg, on="order_id", how="left")
     )
 
-    # Business filters:
-    # Keep all rows but create flags so downstream analysis can decide.
     df["is_delivered"] = (df["order_status"] == "delivered").astype(int)
     df["is_canceled"] = (df["order_status"] == "canceled").astype(int)
 
-    # Revenue features
     df["item_revenue"] = df["price"].fillna(0)
     df["shipping_revenue"] = df["freight_value"].fillna(0)
     df["revenue"] = df["item_revenue"] + df["shipping_revenue"]
 
-    # Time features
     purchase_ts = df["order_purchase_timestamp"]
     delivered_ts = df["order_delivered_customer_date"]
     est_delivery_ts = df["order_estimated_delivery_date"]
@@ -152,7 +146,6 @@ def build_processed_dataset(data: dict[str, pd.DataFrame]) -> pd.DataFrame:
     df["order_weekday"] = purchase_ts.dt.day_name()
     df["purchase_hour"] = purchase_ts.dt.hour
 
-    # Delivery features
     df["delivery_days"] = (delivered_ts - purchase_ts).dt.days
     df["estimated_delivery_days"] = (est_delivery_ts - purchase_ts).dt.days
     df["delivery_delay_days"] = (delivered_ts - est_delivery_ts).dt.days
@@ -162,17 +155,24 @@ def build_processed_dataset(data: dict[str, pd.DataFrame]) -> pd.DataFrame:
     ).astype(int)
 
     df["delivery_status"] = pd.Series("unknown", index=df.index)
-    df.loc[df["delivery_delay_days"].notna() & (df["delivery_delay_days"] <= 0), "delivery_status"] = "on_time_or_early"
-    df.loc[df["delivery_delay_days"].notna() & (df["delivery_delay_days"] > 0), "delivery_status"] = "late"
+    df.loc[
+        df["delivery_delay_days"].notna() & (df["delivery_delay_days"] <= 0),
+        "delivery_status",
+    ] = "on_time_or_early"
+    df.loc[
+        df["delivery_delay_days"].notna() & (df["delivery_delay_days"] > 0),
+        "delivery_status",
+    ] = "late"
     df.loc[df["order_status"] != "delivered", "delivery_status"] = "not_delivered"
 
-    # Product/category handling
     df["product_category_name_english"] = df["product_category_name_english"].fillna("unknown")
 
-    # Data quality flags
     df["missing_review_score_flag"] = df["review_score"].isna().astype(int)
     df["missing_product_category_flag"] = df["product_category_name_english"].eq("unknown").astype(int)
     df["missing_delivery_info_flag"] = df["delivery_days"].isna().astype(int)
+    df["order_status_delivery_conflict_flag"] = (
+        df["order_status"].ne("delivered") & df["order_delivered_customer_date"].notna()
+    ).astype(int)
 
     keep_cols = [
         "order_id",
@@ -207,21 +207,21 @@ def build_processed_dataset(data: dict[str, pd.DataFrame]) -> pd.DataFrame:
         "item_revenue",
         "shipping_revenue",
         "revenue",
-        "payment_installments",
+        "payment_installments_max",
         "payment_type_nunique",
-        "total_payment_value",
+        "order_total_payment_value",
         "review_score",
+        "review_count",
         "has_review_comment",
         "missing_review_score_flag",
         "product_category_name",
         "product_category_name_english",
         "missing_product_category_flag",
         "missing_delivery_info_flag",
+        "order_status_delivery_conflict_flag",
     ]
 
-    df = df[keep_cols].copy()
-
-    return df
+    return df[keep_cols].copy()
 
 
 def save_outputs(df: pd.DataFrame) -> None:

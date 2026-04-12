@@ -13,41 +13,67 @@ def ensure_dirs() -> None:
     os.makedirs(TABLE_DIR, exist_ok=True)
 
 
-def save_monthly_kpi(df: pd.DataFrame) -> None:
+def build_order_level_dataset(df: pd.DataFrame) -> pd.DataFrame:
+    base = df.copy()
+    base["order_purchase_timestamp"] = pd.to_datetime(base["order_purchase_timestamp"])
+
+    return (
+        base.sort_values(["order_id", "order_item_id"])
+        .groupby("order_id", as_index=False)
+        .agg(
+            order_month=("order_month", "first"),
+            order_weekday=("order_weekday", "first"),
+            customer_unique_id=("customer_unique_id", "first"),
+            order_status=("order_status", "first"),
+            is_delivered=("is_delivered", "max"),
+            order_revenue=("revenue", "sum"),
+            review_score=("review_score", "first"),
+            is_late_delivery=("is_late_delivery", "max"),
+            delivery_status=("delivery_status", "first"),
+            delivery_delay_days=("delivery_delay_days", "first"),
+        )
+    )
+
+
+def save_monthly_kpi(order_level: pd.DataFrame) -> None:
+    delivered_orders = order_level[order_level["is_delivered"] == 1].copy()
+
     monthly = (
-        df.groupby("order_month")
+        delivered_orders.groupby("order_month", as_index=False)
         .agg(
             total_orders=("order_id", "nunique"),
-            total_revenue=("revenue", "sum"),
+            total_revenue=("order_revenue", "sum"),
+            avg_order_value=("order_revenue", "mean"),
             avg_review_score=("review_score", "mean"),
             late_delivery_rate=("is_late_delivery", "mean"),
         )
-        .reset_index()
         .sort_values("order_month")
     )
+
     monthly["mom_revenue_growth_pct"] = monthly["total_revenue"].pct_change() * 100
     monthly.to_csv(f"{TABLE_DIR}/monthly_kpi.csv", index=False)
 
     plt.figure(figsize=(10, 5))
     plt.plot(monthly["order_month"], monthly["total_revenue"])
     plt.xticks(rotation=45)
-    plt.title("Monthly Revenue Trend")
+    plt.title("Monthly Delivered Revenue Trend")
     plt.xlabel("Order Month")
-    plt.ylabel("Revenue")
+    plt.ylabel("Delivered Revenue")
     plt.tight_layout()
     plt.savefig(f"{FIGURE_DIR}/monthly_revenue_trend.png")
     plt.close()
 
 
 def save_top_categories(df: pd.DataFrame) -> None:
+    delivered_items = df[df["is_delivered"] == 1].copy()
+
     category = (
-        df.groupby("product_category_name_english")
+        delivered_items.groupby("product_category_name_english", as_index=False)
         .agg(
             total_revenue=("revenue", "sum"),
             total_orders=("order_id", "nunique"),
-            avg_review_score=("review_score", "mean"),
+            avg_item_revenue=("revenue", "mean"),
         )
-        .reset_index()
         .sort_values("total_revenue", ascending=False)
         .head(10)
     )
@@ -56,30 +82,30 @@ def save_top_categories(df: pd.DataFrame) -> None:
     plt.figure(figsize=(10, 6))
     plt.barh(category["product_category_name_english"], category["total_revenue"])
     plt.gca().invert_yaxis()
-    plt.title("Top 10 Product Categories by Revenue")
-    plt.xlabel("Revenue")
+    plt.title("Top 10 Product Categories by Delivered Revenue")
+    plt.xlabel("Delivered Revenue")
     plt.tight_layout()
     plt.savefig(f"{FIGURE_DIR}/top_categories_revenue.png")
     plt.close()
 
 
-def save_delivery_review_analysis(df: pd.DataFrame) -> None:
+def save_delivery_review_analysis(order_level: pd.DataFrame) -> None:
+    delivered_orders = order_level[order_level["is_delivered"] == 1].copy()
+
     delivery = (
-        df.groupby("delivery_status")
+        delivered_orders.groupby("delivery_status", as_index=False)
         .agg(
             total_orders=("order_id", "nunique"),
             avg_review_score=("review_score", "mean"),
             avg_delivery_delay_days=("delivery_delay_days", "mean"),
+            avg_order_value=("order_revenue", "mean"),
         )
-        .reset_index()
         .sort_values("total_orders", ascending=False)
     )
     delivery.to_csv(f"{TABLE_DIR}/delivery_review_analysis.csv", index=False)
 
-    plot_df = delivery[delivery["delivery_status"] != "not_delivered"].copy()
-
     plt.figure(figsize=(8, 5))
-    plt.bar(plot_df["delivery_status"], plot_df["avg_review_score"])
+    plt.bar(delivery["delivery_status"], delivery["avg_review_score"])
     plt.title("Average Review Score by Delivery Status")
     plt.xlabel("Delivery Status")
     plt.ylabel("Average Review Score")
@@ -88,41 +114,42 @@ def save_delivery_review_analysis(df: pd.DataFrame) -> None:
     plt.close()
 
 
-def save_weekday_weekend(df: pd.DataFrame) -> None:
-    weekday_map = df.copy()
-    weekday_map["day_type"] = weekday_map["order_weekday"].apply(
+def save_weekday_weekend(order_level: pd.DataFrame) -> None:
+    delivered_orders = order_level[order_level["is_delivered"] == 1].copy()
+    delivered_orders["day_type"] = delivered_orders["order_weekday"].apply(
         lambda x: "Weekend" if x in ["Saturday", "Sunday"] else "Weekday"
     )
 
     summary = (
-        weekday_map.groupby("day_type")
+        delivered_orders.groupby("day_type", as_index=False)
         .agg(
             total_orders=("order_id", "nunique"),
-            total_revenue=("revenue", "sum"),
+            total_revenue=("order_revenue", "sum"),
+            avg_order_value=("order_revenue", "mean"),
             avg_review_score=("review_score", "mean"),
         )
-        .reset_index()
     )
     summary.to_csv(f"{TABLE_DIR}/weekday_vs_weekend.csv", index=False)
 
     plt.figure(figsize=(6, 4))
     plt.bar(summary["day_type"], summary["total_revenue"])
-    plt.title("Weekday vs Weekend Revenue")
+    plt.title("Weekday vs Weekend Delivered Revenue")
     plt.xlabel("Day Type")
-    plt.ylabel("Revenue")
+    plt.ylabel("Delivered Revenue")
     plt.tight_layout()
     plt.savefig(f"{FIGURE_DIR}/weekday_vs_weekend.png")
     plt.close()
 
 
-def save_customer_repeat_proxy(df: pd.DataFrame) -> None:
+def save_customer_repeat_proxy(order_level: pd.DataFrame) -> None:
+    delivered_orders = order_level[order_level["is_delivered"] == 1].copy()
+
     customer_orders = (
-        df.groupby("customer_unique_id")
+        delivered_orders.groupby("customer_unique_id", as_index=False)
         .agg(
             total_orders=("order_id", "nunique"),
-            total_revenue=("revenue", "sum"),
+            total_revenue=("order_revenue", "sum"),
         )
-        .reset_index()
     )
 
     customer_orders["customer_type"] = customer_orders["total_orders"].apply(
@@ -130,18 +157,17 @@ def save_customer_repeat_proxy(df: pd.DataFrame) -> None:
     )
 
     summary = (
-        customer_orders.groupby("customer_type")
+        customer_orders.groupby("customer_type", as_index=False)
         .agg(
             total_customers=("customer_unique_id", "count"),
             avg_customer_revenue=("total_revenue", "mean"),
         )
-        .reset_index()
     )
     summary.to_csv(f"{TABLE_DIR}/customer_repeat_proxy.csv", index=False)
 
     plt.figure(figsize=(6, 4))
     plt.bar(summary["customer_type"], summary["total_customers"])
-    plt.title("Customer Repeat Proxy")
+    plt.title("Customer Repeat Proxy (Delivered Orders)")
     plt.xlabel("Customer Type")
     plt.ylabel("Total Customers")
     plt.tight_layout()
@@ -152,12 +178,13 @@ def save_customer_repeat_proxy(df: pd.DataFrame) -> None:
 def main() -> None:
     ensure_dirs()
     df = pd.read_csv(DATA_PATH)
+    order_level = build_order_level_dataset(df)
 
-    save_monthly_kpi(df)
+    save_monthly_kpi(order_level)
     save_top_categories(df)
-    save_delivery_review_analysis(df)
-    save_weekday_weekend(df)
-    save_customer_repeat_proxy(df)
+    save_delivery_review_analysis(order_level)
+    save_weekday_weekend(order_level)
+    save_customer_repeat_proxy(order_level)
 
     print("Analysis outputs generated successfully.")
 

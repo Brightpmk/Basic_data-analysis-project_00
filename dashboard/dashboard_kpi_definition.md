@@ -1,28 +1,19 @@
-# Power BI Data Model Notes
+# KPI Definitions
 
-## Tables to import
-- data/marts/fact_sales.csv
-- data/marts/dim_customers.csv
-- data/marts/dim_products.csv
-- data/marts/dim_sellers.csv
-- data/marts/dim_date.csv
-- data/marts/customer_rfm_summary.csv
-- data/marts/kpi_monthly_summary.csv
+## Total Revenue
+Sum of item price and freight value across all rows.
 
-## Relationships
-- fact_sales[customer_id] -> dim_customers[customer_id]
-- fact_sales[product_id] -> dim_products[product_id]
-- fact_sales[seller_id] -> dim_sellers[seller_id]
-- fact_sales[date_key] -> dim_date[date_key]
+## Total Orders
+Distinct count of order_id.
 
-## Core measures
-- Total Revenue = SUM(fact_sales[revenue])
-- Total Orders = DISTINCTCOUNT(fact_sales[order_id])
-- Avg Review Score = AVERAGE(fact_sales[review_score])
-- Late Delivery Rate = AVERAGE(fact_sales[is_late_delivery])
+## Average Review Score
+Average of review_score excluding null values.
 
-## Dashboard Pages
-1. Executive Overview
-2. Product Performance
-3. Delivery & Customer Experience
-4. Customer Segmentation
+## Late Delivery Rate
+Average of is_late_delivery flag where 1 = late, 0 = on time or early.
+
+## Repeat Customer Proxy
+Customers with more than one distinct order_id.
+
+## Top Category Revenue Share
+Revenue contribution from top categories divided by total revenue.

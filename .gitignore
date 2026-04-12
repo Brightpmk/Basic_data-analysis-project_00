@@ -16,7 +16,10 @@ data/processed/*
 data/marts/*
 !data/processed/.gitkeep
 !data/marts/.gitkeep
-outputs/
+outputs/figures/*
+outputs/summary_tables/*
+!outputs/figures/.gitkeep
+!outputs/summary_tables/.gitkeep
 *.db
 *.sqlite
 *.sqlite3

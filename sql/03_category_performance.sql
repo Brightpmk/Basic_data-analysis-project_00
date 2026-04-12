@@ -1,12 +1,14 @@
-SELECT
-    product_category_name_english, total_revenue,
-    RANK() OVER (ORDER BY total_revenue DESC) AS revenue_rank
-FROM (
-    SELECT
-        product_category_name_english,
-        SUM(revenue) AS total_revenue
+WITH delivered_items AS (
+    SELECT *
     FROM olist
-    GROUP BY product_category_name_english
-) t
-ORDER BY revenue_rank
-LIMIT 10;
+    WHERE is_delivered = 1
+)
+
+SELECT
+    product_category_name_english,
+    SUM(revenue) AS total_revenue,
+    COUNT(DISTINCT order_id) AS total_orders,
+    AVG(revenue) AS avg_item_revenue
+FROM delivered_items
+GROUP BY product_category_name_english
+ORDER BY total_revenue DESC;

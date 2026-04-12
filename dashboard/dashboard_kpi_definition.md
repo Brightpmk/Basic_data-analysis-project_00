@@ -1,19 +1,52 @@
-# KPI Definitions
+# KPI Definitions (Order-Level, Delivered Only)
 
-## Total Revenue
-Sum of item price and freight value across all rows.
+## Core Principle
+All KPIs are calculated at the **order level** and use **delivered orders only** unless stated otherwise.
 
-## Total Orders
-Distinct count of order_id.
+---
 
-## Average Review Score
-Average of review_score excluding null values.
+## 1. Total Orders
+Number of unique orders:
+COUNT(DISTINCT order_id)
 
-## Late Delivery Rate
-Average of is_late_delivery flag where 1 = late, 0 = on time or early.
+Condition:
+is_delivered = 1
 
-## Repeat Customer Proxy
-Customers with more than one distinct order_id.
+---
 
-## Top Category Revenue Share
-Revenue contribution from top categories divided by total revenue.
+## 2. Total Revenue
+Sum of revenue from delivered orders:
+SUM(order_revenue)
+
+---
+
+## 3. Average Order Value (AOV)
+Average revenue per order:
+AVG(order_revenue)
+
+---
+
+## 4. Average Review Score
+Average review score at order level:
+AVG(review_score)
+
+---
+
+## 5. Late Delivery Rate
+Percentage of orders delivered late:
+AVG(is_late_delivery)
+
+---
+
+## 6. Month-over-Month Growth
+Revenue growth:
+(current_month - previous_month) / previous_month
+
+---
+
+## Important Notes
+
+- All metrics use **order-level aggregation**
+- Item-level data is only used for category/product analysis
+- Revenue excludes non-delivered orders
+- Some records may contain delivery-status inconsistencies (flagged in dataset)

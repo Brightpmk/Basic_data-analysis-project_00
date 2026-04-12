@@ -1,8 +1,18 @@
-WITH customer_orders AS (
+WITH order_level AS (
+    SELECT
+        order_id,
+        customer_unique_id,
+        MAX(is_delivered) AS is_delivered
+    FROM olist
+    GROUP BY order_id, customer_unique_id
+),
+
+customer_orders AS (
     SELECT
         customer_unique_id,
-        COUNT(DISTINCT order_id) AS total_orders
-    FROM olist
+        COUNT(order_id) AS total_orders
+    FROM order_level
+    WHERE is_delivered = 1
     GROUP BY customer_unique_id
 )
 

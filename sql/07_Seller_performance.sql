@@ -1,26 +1,18 @@
-WITH order_level AS (
+WITH seller_performance AS (
     SELECT
-        order_id,
-        customer_unique_id,
-        MAX(is_delivered) AS is_delivered,
-        SUM(revenue) AS order_revenue
+        seller_id,
+        COUNT(DISTINCT order_id) AS total_orders,
+        SUM(revenue) AS total_revenue,
+        AVG(revenue) AS avg_item_revenue
     FROM olist
-    GROUP BY order_id, customer_unique_id
-),
-
-customer_orders AS (
-    SELECT
-        customer_unique_id,
-        COUNT(order_id) AS total_orders,
-        SUM(order_revenue) AS total_revenue
-    FROM order_level
     WHERE is_delivered = 1
-    GROUP BY customer_unique_id
+    GROUP BY seller_id
 )
 
 SELECT
-    CASE WHEN total_orders > 1 THEN 'Repeat' ELSE 'One-time' END AS customer_type,
-    COUNT(*) AS total_customers,
-    AVG(total_revenue) AS avg_customer_revenue
-FROM customer_orders
-GROUP BY customer_type;
+    seller_id,
+    total_orders,
+    total_revenue,
+    avg_item_revenue
+FROM seller_performance
+ORDER BY total_revenue DESC;

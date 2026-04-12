@@ -1,94 +1,74 @@
-# Data Quality Notes
+# Metric Modeling Rules
 
-This project uses the Olist e-commerce public dataset and applies a cleaned analytical layer for portfolio analysis.
+## Core Rule
 
-## 1. Dataset Grain
+Always confirm the analytical grain before calculating a metric.
 
-The processed dataset `clean_olist_data.csv` is stored at the **order-item level**.
+---
 
-That means:
-- 1 row = 1 item in an order
-- An order with multiple items appears in multiple rows
+## 1. Order-Level Metrics
 
-Because of this, business KPIs such as:
+Use `fact_orders` or an order-level aggregation for:
+
+- total orders
+- total delivered revenue
+- average order value
 - average review score
 - late delivery rate
-- average order value
+- customer repeat rate
+- RFM analysis
 
-must be calculated at the **order level**, not directly from raw item rows.
-
----
-
-## 2. Revenue Definition
-
-Two revenue concepts exist in the dataset:
-
-- `revenue` = item price + freight at the item-row level
-- `order_revenue` = sum of item-row revenue aggregated to the order level
-
-For dashboard KPIs, this project uses:
-
-- **Delivered revenue only**
-- Revenue from non-delivered orders is excluded from primary business KPIs
-
-This avoids overstating realized sales.
+Reason:
+These are business metrics that should treat each order as one observation.
 
 ---
 
-## 3. Payment Value Warning
+## 2. Item-Level Metrics
 
-`order_total_payment_value` is an order-level attribute merged back into the item-level table.
+Use `fact_sales` or item-level rows for:
 
-As a result:
-- the same value is repeated across all items of the same order
+- category revenue
+- seller-product analysis
+- item-level revenue mix
+- product category ranking
 
-So:
-- use it carefully in item-level tables
-- do not sum it directly in `fact_sales`
-- prefer `fact_orders` when using payment totals
-
----
-
-## 4. Delivery Data Caveat
-
-A small number of rows contain inconsistent delivery information, such as:
-
-- non-delivered order status
-- but a non-null customer delivery timestamp
-
-These rows are flagged with:
-
-`order_status_delivery_conflict_flag`
-
-This is treated as a source-data inconsistency, not silently removed.
+Reason:
+These analyses naturally depend on order-item granularity.
 
 ---
 
-## 5. Review Data Interpretation
+## 3. Revenue Rule
 
-Review metrics are handled at the order level after aggregation.
+For main business KPIs, use:
+- delivered orders only
 
-Important distinction:
-- missing review comments are common and expected
-- missing review score should be interpreted separately
-
-This project does not treat all missing review-related fields as data quality problems.
+For operational analysis, a separate all-status revenue view may be created if needed.
 
 ---
 
-## 6. Date Dimension Design
+## 4. Review Rule
 
-`dim_date` is intentionally modeled at:
-- 1 row per date
+Review score must be evaluated at the order level.
 
-Time-of-day fields such as `purchase_hour` remain outside the date dimension to preserve a clean star schema.
+Do not average review score directly from item-level rows, because multi-item orders would be overweighted.
 
 ---
 
-## 7. KPI Modeling Rule
+## 5. Delivery Rule
 
-Default rule used across marts, SQL, and dashboard logic:
+Late delivery is evaluated as an order-level outcome.
 
-- KPI layer = order-level
-- Product/category analysis = item-level
-- Primary revenue KPI = delivered orders only
+Do not calculate late delivery rate from raw item rows unless the analysis explicitly intends item-row weighting.
+
+---
+
+## 6. Payment Rule
+
+`order_total_payment_value` is repeated across item rows.
+
+Safe usage:
+- order-level analysis
+- reconciliation checks
+
+Unsafe usage:
+- direct summation in item-level fact tables

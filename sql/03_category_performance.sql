@@ -1,5 +1,3 @@
--- Rank product categories by total revenue
--- ใช้ window function เพื่อจัดอันดับ
 SELECT
     product_category_name_english, total_revenue,
     RANK() OVER (ORDER BY total_revenue DESC) AS revenue_rank

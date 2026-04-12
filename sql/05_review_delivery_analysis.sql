@@ -1,5 +1,3 @@
--- Analyze relationship between review score and revenue
--- ใช้ aggregation + grouping เชิง behavioral
 SELECT
     review_score,
     COUNT(DISTINCT order_id) AS total_orders,

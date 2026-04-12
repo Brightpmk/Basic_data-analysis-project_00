@@ -1,5 +1,3 @@
--- Identify high-performing sellers
--- ใช้ HAVING เพื่อ filter หลัง aggregate
 SELECT
     seller_id,
     COUNT(DISTINCT order_id) AS total_orders,

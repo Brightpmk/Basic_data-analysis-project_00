@@ -1,5 +1,3 @@
--- Monthly business performance overview
--- ใช้ CTE เพื่อแยก logic ให้ชัดเจนและอ่านง่าย
 WITH monthly_orders AS (
     SELECT
         order_month,

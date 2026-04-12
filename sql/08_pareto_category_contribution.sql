@@ -1,4 +1,3 @@
--- Pareto analysis: top 20% categories contribution
 WITH category_revenue AS (
     SELECT
         product_category_name_english,

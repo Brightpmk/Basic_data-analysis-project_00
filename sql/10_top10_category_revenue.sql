@@ -1,4 +1,3 @@
--- Revenue ของ Top 10 categories
 SELECT
   SUM(revenue) AS top10_revenue
 FROM (

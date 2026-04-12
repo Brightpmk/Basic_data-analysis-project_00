@@ -1,5 +1,3 @@
--- Compare weekday vs weekend performance
--- ใช้ CASE เพื่อ map weekday เป็น weekday/weekend
 SELECT
     CASE
         WHEN order_weekday IN ('Saturday', 'Sunday') THEN 'Weekend'

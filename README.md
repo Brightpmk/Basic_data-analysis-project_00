@@ -1,4 +1,9 @@
-# Olist E-commerce Data Analysis
+# Olist E-commerce Data Analysis (ARCHIVED)
+
+> [!IMPORTANT]
+> **This project has been MERGED into a new unified platform.**
+>
+> This repository is now archived. The functionality of this project (KPI modeling, notebooks, and dashboards) has been combined with others to create the [**Olist E-commerce Analytics Platform**](../mix/olist-ecommerce-platform/README.md).
 
 ## Overview
 

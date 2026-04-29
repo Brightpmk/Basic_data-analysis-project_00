@@ -5,6 +5,12 @@
 >
 > This repository is now archived. The functionality of this project (KPI modeling, notebooks, and dashboards) has been combined with others to create the [**Olist E-commerce Analytics Platform**](https://github.com/Brightpmk/olist-ecommerce-platform).
 
+![Python](https://img.shields.io/badge/Python-3.11-blue)
+![Pandas](https://img.shields.io/badge/Pandas-Data%20Analysis-green)
+![SQL](https://img.shields.io/badge/SQL-Analytics-orange)
+![License](https://img.shields.io/badge/License-MIT-green)
+
+
 ## Overview
 
 This project analyzes the Brazilian Olist e-commerce dataset to uncover business insights across sales performance, customer behavior, and delivery operations.
@@ -291,3 +297,10 @@ This project demonstrates the importance of:
 * connecting data work to business meaning
 
 It reflects a practical, production-style approach to data analysis rather than a purely exploratory workflow.
+
+---
+
+## License
+
+MIT License
+
